@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aplikasi Berita Duka Cita</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#eef2ee;--card:#fff;--ink:#1d2a22;--mut:#5d6b62;--line:#cfd8d1;--g:#1f6b45;--g2:#17533a;--gl:#e3f1e8;--red:#b3302a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121815;--card:#1b241f;--ink:#e6efe9;--mut:#9db0a4;--line:#34443a;--g:#3d9b6b;--g2:#2f8559;--gl:#223a2c;--red:#e0645d}}
+:root[data-theme="dark"]{--bg:#121815;--card:#1b241f;--ink:#e6efe9;--mut:#9db0a4;--line:#34443a;--g:#3d9b6b;--g2:#2f8559;--gl:#223a2c;--red:#e0645d}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "Segoe UI",Roboto,Arial,sans-serif}
+.app{position:relative;z-index:1;background:var(--bg);min-height:100vh;padding-bottom:40px}
+header{background:var(--g);color:#fff;padding:14px 16px;text-align:center}
+header h1{margin:0;font-size:clamp(18px,4.5vw,26px);letter-spacing:.5px}
+header p{margin:2px 0 0;font-size:13px;opacity:.85}
+nav{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:12px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+main{max-width:980px;margin:0 auto;padding:14px}
+button,.btn{font:inherit;font-size:15px;border:1px solid var(--g);background:var(--card);color:var(--g);padding:9px 14px;border-radius:8px;cursor:pointer;font-weight:600}
+button:hover{background:var(--gl)}
+button.p{background:var(--g);color:#fff}button.p:hover{background:var(--g2)}
+button.d{border-color:var(--red);color:var(--red)}button.d:hover{background:var(--red);color:#fff}
+button.on{background:var(--g);color:#fff}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #e0a800;outline-offset:1px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:14px}
+.card h2{margin:0 0 10px;font-size:17px;color:var(--g)}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+label{display:block;font-size:13px;color:var(--mut);font-weight:600}
+label b{color:var(--red)}
+input[type=text],input[type=number],input[type=date],input[type=time],input[type=search]{width:100%;margin-top:3px;padding:10px;font:inherit;border:1px solid var(--line);border-radius:7px;background:var(--card);color:var(--ink)}
+input:read-only{background:var(--gl)}
+.radios{display:flex;gap:14px;flex-wrap:wrap;margin:4px 0 8px}
+.radios label{display:flex;gap:6px;align-items:center;color:var(--ink);font-size:15px}
+.snd{display:grid;grid-template-columns:24px 1fr 1fr;gap:8px;align-items:end;margin-bottom:8px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.ban{background:#fff3cd;color:#664d03;border:1px solid #ffd966;padding:8px 12px;border-radius:8px;margin-bottom:12px;display:none}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:640px;background:var(--card)}
+th,td{border:1px solid var(--line);padding:8px;text-align:left;font-size:14px;vertical-align:top}
+th{background:var(--gl);color:var(--g)}
+td.a{white-space:nowrap}td.a button{padding:5px 8px;font-size:13px;margin:1px}
+.empty{padding:26px;text-align:center;color:var(--mut)}
+.hide{display:none!important}
+#toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:8px;z-index:50;display:none;max-width:90vw;font-size:14px}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:40;padding:16px}
+#modal div{background:var(--card);padding:20px;border-radius:10px;max-width:360px;width:100%}
+#modal p{margin:0 0 14px}
+.pvwrap{background:#9aa59e;padding:10px;border-radius:8px;overflow:hidden}
+#scaler{transform-origin:top left;width:210mm}
+#pdfhost{position:fixed;left:0;top:0;z-index:-1;width:210mm}
+
+/* ===== SURAT (hitam putih) ===== */
+.letter{position:relative;width:210mm;height:296mm;background:#fff;color:#000;font:11.5pt/1.3 Arial,Helvetica,sans-serif;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.4);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.fr{position:absolute;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23222'/%3E%3Cpath d='M3 21C3 9 9 3 21 3 21 15 15 21 3 21Z' fill='%23fff'/%3E%3Cpath d='M6 18L18 6' stroke='%23222' stroke-width='1.6'/%3E%3C/svg%3E") repeat}
+.fr.t{left:0;right:0;top:0;height:9mm}.fr.b{left:0;right:0;bottom:0;height:9mm}
+.fr.l{top:0;bottom:0;left:0;width:9mm}.fr.r{top:0;bottom:0;right:0;width:9mm}
+.in{position:absolute;inset:9mm;border:1px solid #000;padding:11mm 15mm 0 14mm}
+.tc{text-align:center}
+.tt{display:inline-block;background:#d4d4d4;border:1.5px solid #000;padding:.6mm 4mm;font:900 19pt "Arial Black",Impact,Arial,sans-serif;letter-spacing:.4px}
+.tt.s{font-size:15pt}
+.it{font-style:italic}
+.row{display:flex;align-items:flex-end;gap:2mm;margin:2.6mm 0}
+.lb{flex:0 0 42mm}.cl{flex:0 0 2mm}
+.u{flex:1;border-bottom:1px solid #000;min-height:5.6mm;padding:0 1.5mm;font-weight:700;font-size:11pt;line-height:1.25;overflow:hidden;white-space:nowrap}
+.w{flex:0 0 auto}
+.ind{margin-left:34mm}.ind .lb{flex:0 0 24mm}.ind .u{flex:0 0 62mm}
+.sd{display:grid;grid-template-columns:5mm 1fr 3mm 1fr 3mm;gap:1.5mm;align-items:end;margin:2.6mm 0;width:75%}
+.sd .u{flex:none;min-width:0}
+@media print{
+@page{size:A4 portrait;margin:0}
+html,body,.app{background:#fff!important;padding:0;margin:0}
+.noprint{display:none!important}
+main{padding:0;max-width:none}
+.pvwrap{padding:0;background:#fff;overflow:visible}
+#scaler{transform:none!important}#pvh{height:auto!important}
+.letter{box-shadow:none;page-break-after:avoid;page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="noprint"><h1>APLIKASI BERITA DUKA CITA</h1><p>Isi formulir, simpan, lalu cetak atau simpan sebagai PDF</p></header>
+<nav class="noprint">
+<button id="nIn" class="p">➕ Input Berita Duka</button>
+<button id="nDa">📋 Data Berita Duka</button>
+<button id="nSe">🔍 Cari Data</button>
+</nav>
+<main>
+<!-- INPUT -->
+<section id="v-input">
+<div id="ban" class="ban"></div>
+<form id="f" autocomplete="off">
+<div class="card"><h2>Identitas Masjid / Musholla</h2>
+<label>Nama Masjid / Musholla <b>*</b><input type="text" id="masjid" required></label></div>
+
+<div class="card"><h2>Data Orang yang Meninggal</h2>
+<div class="grid g2">
+<label>Nama <b>*</b><input type="text" id="nama" required></label>
+<label>Bin / Binti<input type="text" id="bin"></label>
+<label>Panggilan Sehari-hari<input type="text" id="pan"></label></div>
+<div class="grid" style="margin-top:10px">
+<label>Usia (tahun) <b>*</b><input type="number" id="usia" min="0" max="130" required></label>  
+<label>Pada Hari (otomatis)<input type="text" id="hari" readonly></label>
+<label>Tanggal <b>*</b><input type="date" id="tgl" required></label>
+<label>Jam <b>*</b><input type="time" id="jam" required></label></div>
+<label style="margin-top:8px;display:flex;gap:6px;align-items:center;color:var(--ink);font-weight:400"><input type="checkbox" id="auto" checked> Jam otomatis (sekarang) — hilangkan centang untuk mengisi manual</label>
+</div>
+
+<div class="card"><h2>Alamat</h2>
+<label>Alamat / Jalan <b>*</b><input type="text" id="alamat" required></label>
+<div class="grid" style="margin-top:10px">
+<label>RT<input type="text" id="rt"></label><label>RW<input type="text" id="rw"></label><label>No<input type="text" id="no"></label></div>
+<div class="grid" style="margin-top:10px">
+<label>Kelurahan <b>*</b><input type="text" id="kel" required></label>
+<label>Kecamatan <b>*</b><input type="text" id="kec" required></label>
+<label>Kota <b>*</b><input type="text" id="kota" required value="Jakarta"></label></div></div>
+
+<div class="card"><h2>Tempat Meninggal</h2>
+<div class="radios">
+<label><input type="radio" name="tp" value="Rumah" checked> Rumah</label>
+<label><input type="radio" name="tp" value="Rumah Sakit"> Rumah Sakit</label>
+<label><input type="radio" name="tp" value="Lainnya"> Lainnya</label></div>
+<label>Nama Rumah Sakit / tempat meninggal<input type="text" id="rs"></label></div>
+
+<div class="card"><h2>Pengirim Berita</h2><div id="snd"></div></div>
+
+<div class="bar">
+<button type="submit" class="p" id="sv">💾 Simpan &amp; Preview</button>
+<button type="button" id="rst">↺ Reset Form</button>
+</div>
+</form>
+</section>
+
+<!-- DATA -->
+<section id="v-data" class="hide">
+<div class="card"><label>🔍 Cari data<input type="search" id="q" placeholder="🔍 Cari nama, tanggal, alamat, kelurahan..."></label></div>
+<div class="card tw" style="padding:0"><table><thead><tr><th>No</th><th>Nama</th><th>Tanggal</th><th>Jam</th><th>Alamat</th><th>Aksi</th></tr></thead><tbody id="tb"></tbody></table><div id="em" class="empty hide"></div></div>
+</section>
+
+<!-- PREVIEW -->
+<section id="v-prev" class="hide">
+<div class="bar noprint" style="margin:0 0 10px">
+<button class="p" id="pPr">🖨️ PRINT SURAT</button>
+<button class="p" id="pPd">💾 SIMPAN PDF</button>
+<button id="pEd">✏️ Edit</button>
+<button id="pCp">📄 Salin Data</button>
+<button class="d" id="pDl">🗑️ Hapus</button>
+<button id="pBk">📋 Data</button>
+</div>
+<div class="pvwrap"><div id="pvh"><div id="scaler"></div></div></div>
+</section>
+</main>
+</div>
+<div id="pdfhost"></div>
+<div id="toast"></div>
+<div id="modal"><div><p id="mt"></p><div class="bar" style="justify-content:flex-end"><button id="mn">Batal</button><button class="d" id="my">Ya, hapus</button></div></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+const KEY='duka_v1',$=s=>document.querySelector(s);
+const HARI=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+const BLN=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+let db=[],editId=null,curId=null,mem=false;
+try{db=JSON.parse(localStorage.getItem(KEY))||[]}catch(e){db=[]}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){toast('Penyimpanan browser tidak tersedia — data hanya sementara')}}
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',3200)}
+function ask(msg){return new Promise(r=>{$('#mt').textContent=msg;$('#modal').style.display='flex';const done=v=>{$('#modal').style.display='none';r(v)};$('#my').onclick=()=>done(true);$('#mn').onclick=()=>done(false)})}
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pd=iso=>{const [y,m,d]=iso.split('-').map(Number);return new Date(y,m-1,d)};
+const hari=iso=>iso?HARI[pd(iso).getDay()]:'';
+const fID=iso=>{if(!iso)return'';const d=pd(iso);return d.getDate()+' '+BLN[d.getMonth()]+' '+d.getFullYear()};
+const fDM=iso=>iso?iso.split('-').reverse().join('-'):'';
+const todayISO=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const nowT=()=>{const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+
+// pengirim rows
+$('#snd').innerHTML=[1,2,3,4,5].map(i=>`<div class="snd"><span>${i}.</span><label>Nama<input type="text" id="sn${i}"></label><label>Nama<input type="text" id="sk${i}"></label></div>`).join('');
+const FIELDS=['masjid','nama','bin','pan','tgl','jam','usia','alamat','rt','rw','no','kel','kec','kota','rs'];
+
+function views(n){['input','data','prev'].forEach(v=>$('#v-'+v).classList.toggle('hide',v!==n));
+$('#nIn').classList.toggle('p',n==='input');$('#nDa').classList.toggle('p',n==='data');window.scrollTo(0,0)}
+function setHari(){$('#hari').value=hari($('#tgl').value)}
+function autoJam(){const a=$('#auto').checked;$('#jam').readOnly=a;if(a)$('#jam').value=nowT()}
+$('#auto').onchange=autoJam;$('#tgl').onchange=setHari;
+
+function resetForm(keepMasjid=true){
+ const m=$('#masjid').value;$('#f').reset();editId=null;
+ $('#masjid').value=keepMasjid?(m||localStorage.getItem('duka_masjid')||''):'';
+ $('#tgl').value=todayISO();$('#kota').value='Jakarta';$('#auto').checked=true;autoJam();setHari();
+ $('#ban').style.display='none';$('#sv').textContent='💾 Simpan & Preview'}
+function fill(r){
+ FIELDS.forEach(k=>{$('#'+k).value=r[k]||''});
+ document.querySelector(`input[name=tp][value="${r.tp||'Rumah'}"]`).checked=true;
+ for(let i=0;i<5;i++){const s=(r.snd||[])[i]||{};$('#sn'+(i+1)).value=s.n||'';$('#sk'+(i+1)).value=s.k||''}
+ $('#auto').checked=false;autoJam();setHari()}
+function read(){const r={};FIELDS.forEach(k=>r[k]=$('#'+k).value.trim());
+ r.tp=document.querySelector('input[name=tp]:checked').value;
+ r.snd=[1,2,3,4,5].map(i=>({n:$('#sn'+i).value.trim(),k:$('#sk'+i).value.trim()}));return r}
+
+$('#f').onsubmit=e=>{e.preventDefault();
+ const r=read();
+ if(r.tgl>todayISO()&&!editId){toast('Tanggal meninggal tidak boleh di masa depan');return}
+ if(editId){const i=db.findIndex(x=>x.id===editId);db[i]=Object.assign(db[i],r)}
+ else{r.id=Date.now();r.created=todayISO();db.push(r);editId=null}
+ try{localStorage.setItem('duka_masjid',r.masjid)}catch(_){}
+ persist();const id=editId||r.id;editId=null;showPrev(id);toast('Data tersimpan')};
+$('#rst').onclick=()=>{resetForm(false);toast('Form dikosongkan')};
+
+function place(r){const n=r.rs;
+ if(r.tp==='Rumah Sakit')return 'Rumah Sakit'+(n?' '+n:'');
+ if(r.tp==='Rumah')return 'Rumah'+(n?' ('+n+')':'');
+ return n||'Lainnya'}
+function letter(r){
+ const U=(v,c='')=>`<span class="u ${c}">${esc(v)}</span>`;
+ const sd=(r.snd||[]).concat(Array(5).fill({})).slice(0,5).map((s,i)=>`<div class="sd"><span>${i+1}</span>${U(s.n)}<span>(</span>${U(s.k)}<span>)</span></div>`).join('');
+ return `<div class="letter"><i class="fr t"></i><i class="fr b"></i><i class="fr l"></i><i class="fr r"></i>
+<div class="in">
+<div class="tc" style="margin-bottom:9mm"><span class="tt">BERITA DUKA CITA</span></div>
+<div class="it" style="margin:0 0 4mm">Assalamu'alaikum Wr.Wb</div>
+<div class="row"><span class="w">Kami dari Masjid / Musholla :</span>${U(r.masjid)}</div>
+<div style="margin:2.6mm 0 4mm">Akan menyampaikan sebuah Berita Duka Cita</div>
+<div class="tc" style="margin:3mm 0 5mm"><span class="tt s">ISI BERITA :</span></div>
+<div class="it" style="margin:0 0 4mm">" Inna Lillahi wa Inna Ilaihi roji'un "</div>
+<div style="margin:0 0 3mm">Telah meninggal dunia :</div>
+<div class="row"><span class="lb">Nama</span><span class="cl">:</span>${U(r.nama)}<span class="w">Bin/Binti :</span>${U(r.bin)}</div>
+<div class="row"><span class="lb">Panggilan Sehari-hari</span><span class="cl">:</span>${U(r.pan)}</div>
+<div class="row"><span class="lb">Dalam Usia</span><span class="cl">:</span><span class="w">±</span><span class="u" style="flex:0 0 28mm">${esc(r.usia)}</span><span class="w">Tahun</span></div>
+<div class="row"><span class="lb">Pada Hari</span><span class="cl">:</span><span class="u" style="flex:0 0 28mm">${esc(hari(r.tgl))}</span><span class="w">Tanggal :</span><span class="u" style="flex:0 0 36mm">${esc(fID(r.tgl))}</span><span class="w">Jam :</span><span class="u" style="flex:0 0 14mm">${esc(r.jam)}</span><span class="w">Wib</span></div>
+<div class="row" style="margin-top:5mm"><span class="lb" style="flex-basis:20mm">Alamat</span>${U(r.alamat)}<span class="w">Rt.</span><span class="u" style="flex:0 0 9mm">${esc(r.rt)}</span><span class="w">Rw</span><span class="u" style="flex:0 0 9mm">${esc(r.rw)}</span><span class="w">No</span><span class="u" style="flex:0 0 11mm">${esc(r.no)}</span></div>
+<div class="row ind"><span class="lb">Kelurahan</span><span class="cl">:</span>${U(r.kel)}</div>
+<div class="row ind"><span class="lb">Kecamatan</span><span class="cl">:</span>${U(r.kec)}</div>
+<div class="row ind"><span class="lb">Kota</span><span class="cl">:</span>${U(r.kota)}</div>
+<div class="row" style="margin-top:5mm"><span class="w">Meninggal Dunia di Rumah / Rumah Sakit :</span>${U(place(r))}</div>
+<div style="margin:4mm 0 7mm">Kepada Sanak family dan Handai taulan diharap maklum dengan berita duka cita ini.</div>
+<div style="margin-bottom:2mm">PENGIRIM BERITA :</div>
+${sd}
+<div style="margin:4mm 0 7mm">Demikanlah berita duka cita ini kami sampaikan, atas perhatiannya kami ucapkan Terimakasih.</div>
+<div class="it" style="margin-top:8mm">Wassalamu'alaikum Wr.Wb</div>
+</div></div>`}
+
+function fit(){const w=$('#scaler').parentElement.parentElement.clientWidth-20;
+ const s=Math.min(1,w/794);$('#scaler').style.transform=`scale(${s})`;$('#pvh').style.height=(1118*s)+'px'}
+addEventListener('resize',fit);
+function get(id){return db.find(x=>x.id===id)}
+function showPrev(id){curId=id;$('#scaler').innerHTML=letter(get(id));views('prev');fit();render()}
+function fname(r){return 'Berita_Duka_'+r.nama.replace(/[^\w\u00C0-\u024F]+/g,'_')+'_'+fDM(r.tgl)+'.pdf'}
+async function pdf(id){const r=get(id);const h=$('#pdfhost');
+ if(!window.html2pdf){toast('Pustaka PDF belum termuat. Gunakan Print lalu pilih "Simpan sebagai PDF".');return}
+ toast('Membuat PDF...');h.innerHTML=letter(r);
+ try{await html2pdf().set({margin:0,filename:fname(r),image:{type:'jpeg',quality:.98},html2canvas:{scale:2,backgroundColor:'#fff',scrollX:0,scrollY:0},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(h.firstElementChild).save();toast('PDF disimpan: '+fname(r))}
+ catch(e){toast('Gagal membuat PDF. Coba Print > Simpan sebagai PDF.')}
+ h.innerHTML=''}
+function doPrint(id){showPrev(id);setTimeout(()=>{try{window.print()}catch(e){toast('Print tidak tersedia di tampilan ini. Buka tautan di browser.')}},250)}
+function edit(id){const r=get(id);resetForm();fill(r);editId=id;
+ $('#ban').style.display='block';$('#ban').textContent='Mode edit: '+r.nama+'. Ubah data lalu tekan Simpan Perubahan.';
+ $('#sv').textContent='💾 Simpan Perubahan';views('input')}
+function copy(id){const r=Object.assign({},get(id));resetForm();fill(r);editId=null;$('#auto').checked=true;autoJam();$('#tgl').value=todayISO();setHari();
+ $('#ban').style.display='block';$('#ban').textContent='Salinan dari '+r.nama+'. Ubah data yang berbeda, lalu simpan sebagai berita baru.';
+ $('#nama').value='';$('#bin').value='';$('#pan').value='';$('#usia').value='';views('input');$('#nama').focus()}
+async function del(id){const r=get(id);if(!await ask('Hapus berita duka "'+r.nama+'"? Data tidak dapat dikembalikan.'))return;
+ db=db.filter(x=>x.id!==id);persist();render();toast('Data dihapus');views('data')}
+
+function render(){const q=$('#q').value.trim().toLowerCase();
+ const rows=db.map((r,i)=>({r,n:i+1})).filter(({r})=>!q||[r.nama,r.tgl,fDM(r.tgl),fID(r.tgl),r.alamat,r.kel].join(' ').toLowerCase().includes(q)).reverse();
+ $('#tb').innerHTML=rows.map(({r,n})=>`<tr><td>${n}</td><td>${esc(r.nama)}${r.bin?'<br><small>bin/binti '+esc(r.bin)+'</small>':''}</td><td>${fDM(r.tgl)}</td><td>${esc(r.jam)}</td><td>${esc(r.alamat)}, ${esc(r.kel)}</td>
+ <td class="a"><button data-a="v" data-i="${r.id}">👁 Lihat</button><button data-a="e" data-i="${r.id}">✏️ Edit</button><button data-a="p" data-i="${r.id}">🖨️ Print</button><button data-a="f" data-i="${r.id}">💾 PDF</button><button data-a="c" data-i="${r.id}">📄 Salin Data</button><button class="d" data-a="d" data-i="${r.id}">🗑️ Hapus</button></td></tr>`).join('');
+ const em=$('#em');em.classList.toggle('hide',rows.length>0);
+ em.textContent=db.length?'Tidak ada data yang cocok dengan pencarian.':'Belum ada data. Tekan "Input Berita Duka" untuk menambah.'}
+$('#tb').onclick=e=>{const b=e.target.closest('button');if(!b)return;const id=+b.dataset.i,a=b.dataset.a;
+ ({v:()=>showPrev(id),e:()=>edit(id),p:()=>doPrint(id),f:()=>pdf(id),c:()=>copy(id),d:()=>del(id)})[a]()};
+$('#q').oninput=render;
+$('#nIn').onclick=()=>{if(editId||$('#v-input').classList.contains('hide')){resetForm()}views('input')};
+$('#nDa').onclick=()=>{render();views('data')};
+$('#nSe').onclick=()=>{render();views('data');$('#q').focus()};
+$('#pPr').onclick=()=>window.print();
+$('#pPd').onclick=()=>pdf(curId);
+$('#pEd').onclick=()=>edit(curId);
+$('#pCp').onclick=()=>copy(curId);
+$('#pDl').onclick=()=>del(curId);
+$('#pBk').onclick=()=>{render();views('data')};
+resetForm();render();
+</script>
+</body>
+</html>
